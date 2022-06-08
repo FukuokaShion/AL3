@@ -28,6 +28,8 @@ void GameScene::Initialize() {
 	//軸方向
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
+
+	cube->Affine();
 }
 
 void GameScene::Update() {
