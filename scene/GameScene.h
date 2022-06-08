@@ -4,12 +4,12 @@
 #include "DirectXCommon.h"
 #include "DebugText.h"
 #include "Input.h"
-#include "Model.h"
 #include "SafeDelete.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
-#include "WorldTransform.h"
-#include <DirectXMath.h>
+#include "DebugCamera.h"
+
+#include "Cube.h"
 
 /// <summary>
 /// ゲームシーン
@@ -51,4 +51,12 @@ class GameScene {
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	
+	//オブジェクト
+	Cube* cube = nullptr;
+
+	//デバッグカメラ
+	ViewProjection viewProjection_;
+	DebugCamera* debugCamera_ = nullptr;
+
 };

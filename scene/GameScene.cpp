@@ -1,12 +1,15 @@
 ﻿#include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
-
-using namespace DirectX;
+#include "AxisIndicator.h"
+#include "PrimitiveDrawer.h"
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {}
+GameScene::~GameScene() {
+	delete debugCamera_;
+	cube->~Cube();
+}
 
 void GameScene::Initialize() {
 
@@ -14,9 +17,23 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	debugText_ = DebugText::GetInstance();
+
+
+	viewProjection_.Initialize();
+	cube = new Cube();
+
+	//デバッグカメラ
+	debugCamera_ = new DebugCamera(1280, 720);
+
+	//軸方向
+	AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 }
 
-void GameScene::Update() {}
+void GameScene::Update() {
+	debugCamera_->Update();
+}
+
 
 void GameScene::Draw() {
 
@@ -44,6 +61,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	cube->Draw(debugCamera_);
+
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
