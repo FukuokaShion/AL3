@@ -29,7 +29,11 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 
-	cube->Affine();
+	Vector3 scale, rota, trans;
+	scale = {3, 3, 3};
+	rota = {PI / 4, PI / 4, PI / 4};
+	trans = {10, 10, 10};
+	cube->Affine(scale, rota, trans);
 }
 
 void GameScene::Update() {

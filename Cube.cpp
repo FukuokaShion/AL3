@@ -14,9 +14,9 @@ Cube::Cube() {
 
 Cube::~Cube() { delete model_; }
 
-void Cube::Affine() {
+void Cube::Affine(Vector3 scale,Vector3 rota,Vector3 trans) {
 	//スケーリング
-	worldTransform_.scale_ = {3, 3, 3};
+	worldTransform_.scale_ = {scale.x, scale.y, scale.z};
 	Matrix4 matScale = {
 		worldTransform_.scale_.x,0,0,0,
 		0,worldTransform_.scale_.y,0,0,
@@ -25,8 +25,7 @@ void Cube::Affine() {
 	};
 	
 	//回転
-	float PI = 3.1415;
-	worldTransform_.rotation_ = {PI/4, PI/4, PI/4};
+	worldTransform_.rotation_ = {rota.x, rota.y, rota.z};
 
 	Matrix4 matRotaX, matRotaY, matRotaZ; 
 	
@@ -52,7 +51,7 @@ void Cube::Affine() {
 	};
 
 	//平行移動
-	worldTransform_.translation_ = {10, 10, 10};
+	worldTransform_.translation_ = {trans.x, trans.y, trans.z};
 
 	Matrix4 matTrans = {
 		1,0,0,0,

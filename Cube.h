@@ -9,7 +9,7 @@ class Cube {
 
 	~Cube();
 
-	void Affine();
+	void Affine(Vector3 scale, Vector3 rota, Vector3 trans);
 
 	void Draw(DebugCamera* debugCamera_);
 
