@@ -51,18 +51,20 @@ class GameScene {
 	Audio* audio_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
-	Model model_;
-	WorldTransform worldTransform_;
 
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
 	
 	//オブジェクト
-	Cube* cube = nullptr;
+	Cube* cubes[100];
+	WorldTransform worldTransforms_[100];
 
 	//デバッグカメラ
 	ViewProjection viewProjection_;
 	DebugCamera* debugCamera_ = nullptr;
+
+	//カメラ上方向の角度
+	float viewAngle = 0.0f;
 
 };

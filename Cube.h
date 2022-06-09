@@ -13,6 +13,8 @@ class Cube {
 
 	void Draw(DebugCamera* debugCamera_);
 
+	void Draw(ViewProjection viewProjection);
+
 	private:
 	uint32_t textureHandle_ = 0;
 	Model* model_ = nullptr;

@@ -36,3 +36,7 @@ void Cube::Affine(WorldTransform worldTransform_) {
 void Cube::Draw(DebugCamera* debugCamera_) {
 	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), textureHandle_);
 }
+
+void Cube::Draw(ViewProjection viewProjection) {
+	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+}
