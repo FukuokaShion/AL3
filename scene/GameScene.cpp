@@ -20,7 +20,7 @@ void GameScene::Initialize() {
 
 
 	viewProjection_.Initialize();
-	cube = new Cube();
+
 
 	//デバッグカメラ
 	debugCamera_ = new DebugCamera(1280, 720);
@@ -29,11 +29,16 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 
-	Vector3 scale, rota, trans;
-	scale = {3, 3, 3};
-	rota = {PI / 4, PI / 4, PI / 4};
-	trans = {10, 10, 10};
-	cube->Affine(scale, rota, trans);
+
+
+	//オブジェクト
+	cube = new Cube();
+
+	worldTransform_.scale_ = {3.0f, 3.0f, 3.0f};
+	worldTransform_.rotation_ = {PI / 4, PI / 4, PI / 4};
+	worldTransform_.translation_ = {10.0f, 10.0f, 10.0f};
+
+	cube->Affine(worldTransform_);
 }
 
 void GameScene::Update() {

@@ -45,10 +45,14 @@ class GameScene {
 
   private: // メンバ変数
 	float PI = 3.1415;
+
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 	DebugText* debugText_ = nullptr;
+
+	Model model_;
+	WorldTransform worldTransform_;
 
 	/// <summary>
 	/// ゲームシーン用
