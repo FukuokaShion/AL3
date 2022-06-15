@@ -10,27 +10,27 @@ Cube::Cube() {
 	model_ = Model::Create();
 	
 	//ワールドトランスフォームの初期化
-	worldTransform_.Initialize();
+	this->worldTransform_.Initialize();
 }
 
 Cube::~Cube() {
 	delete model_;
 }
 
-void Cube::Affine(WorldTransform worldTransform_) {
+void Cube::Update(WorldTransform worldTransform_) {
 	//行列設定
-	Matrix4 matScale = AffineScale(worldTransform_);
-	Matrix4 matRotaX = AffineRotaX(worldTransform_);
-	Matrix4 matRotaY = AffineRotaY(worldTransform_);
-	Matrix4 matRotaZ = AffineRotaZ(worldTransform_);
-	Matrix4 matRota = AffineRota(matRotaZ, matRotaX, matRotaY);
-	Matrix4 matTrans = AffineTrans(worldTransform_);
+	Matrix4 affineWorld = Affine(worldTransform_);
 
 	//掛け
-	this->worldTransform_.matWorld_ = AffineWorld(matScale,matRota,matTrans);
+	this->worldTransform_.matWorld_ = affineWorld;
 
 	//行列の転送
 	this->worldTransform_.TransferMatrix();
+}
+
+void Cube::Update(Matrix4 world) { 
+	worldTransform_.matWorld_ = world;
+	worldTransform_.TransferMatrix();
 }
 
 void Cube::Draw(DebugCamera* debugCamera_) {

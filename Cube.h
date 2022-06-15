@@ -9,7 +9,8 @@ class Cube {
 
 	~Cube();
 
-	void Affine(WorldTransform worldTransform);
+	void Update(WorldTransform worldTransform);
+	void Update(Matrix4 world);
 
 	void Draw(DebugCamera* debugCamera_);
 
@@ -18,5 +19,7 @@ class Cube {
 	private:
 	uint32_t textureHandle_ = 0;
 	Model* model_ = nullptr;
+
+	public:
 	WorldTransform worldTransform_;
 };

@@ -81,3 +81,14 @@ Matrix4 AffineWorld(Matrix4 scale, Matrix4 rota, Matrix4 trans) {
 
 	return matWorld;
 }
+
+
+Matrix4 Affine(WorldTransform worldTransform) {
+	Matrix4 matScale = AffineScale(worldTransform);
+	Matrix4 matRotaX = AffineRotaX(worldTransform);
+	Matrix4 matRotaY = AffineRotaY(worldTransform);
+	Matrix4 matRotaZ = AffineRotaZ(worldTransform);
+	Matrix4 matRota = AffineRota(matRotaZ, matRotaX, matRotaY);
+	Matrix4 matTrans = AffineTrans(worldTransform);
+	return AffineWorld(matScale, matRota, matTrans);
+}

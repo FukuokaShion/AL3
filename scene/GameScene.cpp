@@ -4,12 +4,13 @@
 #include "TextureManager.h"
 #include <cassert>
 #include <random>
+#include<Affine.h>
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete debugCamera_;
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 9; i++) {
 		cubes[i]->~Cube();
 	}
 }
@@ -23,20 +24,20 @@ void GameScene::Initialize() {
 	
 //-----カメラ設定-----
 	{
-		//カメラ始点座標を設定
-		viewProjection_.eye = {0, 0, -50};
-		//カメラの注視点座標設定
-		viewProjection_.target = {0, 0, 0};
-		//カメラの上方向ベクトル設定
-		viewProjection_.up = {0.0f, 1.0f, 0.0f};
-		//カメラ垂直方向視野角を設定
-		viewProjection_.fovAngleY = PI/4.0f;
-		//アス比を設定
-		//viewProjection_.aspectRatio = 1.0f;
-		//ニアクリップ距離を設定
-		viewProjection_.nearZ = 52.0f;
-		//ファークリップ距離を設定
-		viewProjection_.farZ = 53.0f;
+		////カメラ始点座標を設定
+		//viewProjection_.eye = {0, 0, -50};
+		////カメラの注視点座標設定
+		//viewProjection_.target = {0, 0, 0};
+		////カメラの上方向ベクトル設定
+		//viewProjection_.up = {0.0f, 1.0f, 0.0f};
+		////カメラ垂直方向視野角を設定
+		//viewProjection_.fovAngleY = PI/4.0f;
+		////アス比を設定
+		////viewProjection_.aspectRatio = 1.0f;
+		////ニアクリップ距離を設定
+		//viewProjection_.nearZ = 52.0f;
+		////ファークリップ距離を設定
+		//viewProjection_.farZ = 53.0f;
 		//ビュープロジェクションの初期化
 		viewProjection_.Initialize();
 	}
@@ -50,36 +51,110 @@ void GameScene::Initialize() {
 
 //---------オブジェクト----------
 	{
-		//乱数シード生成器
-		std::random_device seed_gen;
-		//メルセンヌツイスターの乱数エンジン
-		std::mt19937_64 engin(seed_gen());
-		//回転用乱数範囲指定
-		std::uniform_real_distribution<float> rotaDist(0, PI);
-		//座標用乱数範囲指定
-		std::uniform_real_distribution<float> transDist(-10, 10);
+		//大元
+		worldTransform_[PartId::kRoot].Initialize();
+		//脊髄
+		worldTransform_[PartId::kSpine].Initialize();
+		worldTransform_[PartId::kSpine].parent_ = &worldTransform_[PartId::kRoot];
+		worldTransform_[PartId::kSpine].translation_ = {0, 4.5, 0};
 
-		//ワールドトランスフォームのランダム生成
-		for (WorldTransform& worldTransform : worldTransforms_) {
-			worldTransform.Initialize();
+		//上半身
+		//胸
+		worldTransform_[PartId::kChest].Initialize();
+		worldTransform_[PartId::kChest].parent_ = &worldTransform_[PartId::kSpine];
+		worldTransform_[PartId::kChest].translation_ = {0, 0, 0};
+		//頭
+		worldTransform_[PartId::kHead].Initialize();
+		worldTransform_[PartId::kHead].parent_ = &worldTransform_[PartId::kChest];
+		worldTransform_[PartId::kHead].translation_ = {0, 3.0f, 0};
+		//左腕
+		worldTransform_[PartId::kArmL].Initialize();
+		worldTransform_[PartId::kArmL].parent_ = &worldTransform_[PartId::kChest];
+		worldTransform_[PartId::kArmL].translation_ = {-3.0f, 0, 0};
+		//右腕
+		worldTransform_[PartId::kArmR].Initialize();
+		worldTransform_[PartId::kArmR].parent_ = &worldTransform_[PartId::kChest];
+		worldTransform_[PartId::kArmR].translation_ = {3.0f, 0, 0};
 
-			worldTransform.scale_ = {1, 1, 1};
-			worldTransform.rotation_ = {rotaDist(engin), rotaDist(engin), rotaDist(engin)};
-			worldTransform.translation_ = {transDist(engin), transDist(engin), transDist(engin)};
-		}
+		//下半身
+		//尻
+		worldTransform_[PartId::kHip].Initialize();
+		worldTransform_[PartId::kHip].parent_ = &worldTransform_[PartId::kSpine];
+		worldTransform_[PartId::kHip].translation_ = {0, -3.0f, 0};
+		//左足
+		worldTransform_[PartId::kLegL].Initialize();
+		worldTransform_[PartId::kLegL].parent_ = &worldTransform_[PartId::kHip];
+		worldTransform_[PartId::kLegL].translation_ = {-3.0f, -6.0f, 0};
+		//右足
+		worldTransform_[PartId::kLegR].Initialize();
+		worldTransform_[PartId::kLegR].parent_ = &worldTransform_[PartId::kHip];
+		worldTransform_[PartId::kLegR].translation_ = {3.0f, -6.0f, 0};
+
+
 		//オブジェクトの初期化
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 9; i++) {
 			cubes[i] = new Cube();
-			cubes[i]->Affine(worldTransforms_[i]);
+			cubes[i]->Update(worldTransform_[i]);
 		}
 	}
 }
 
 
 void GameScene::Update() {
+	//移動ベクトル
+	Vector3 move = {0, 0, 0};
+	//移動速度
+	float moveSpeed = 0.2f;
+
+	//横移動
+	if (input_->PushKey(DIK_RIGHT)) {
+		move.x = moveSpeed;
+	} else if (input_->PushKey(DIK_LEFT)) {
+		move.x = -moveSpeed;
+	};
+	worldTransform_[PartId::kRoot].translation_ += move;
+
+
+	//上半身回転
+	//移動ベクトル
+	Vector3 chestRota = {0, 0, 0};
+	//回転速度
+	float chestRotaSpeed = PI / 90;
+	if (input_->PushKey(DIK_U)) {
+		chestRota.y = -chestRotaSpeed;
+	} else if (input_->PushKey(DIK_I)) {
+		chestRota.y = chestRotaSpeed;
+	};
+	worldTransform_[PartId::kChest].rotation_ += chestRota;
+
+
+	//下半身回転
+	//移動ベクトル
+	Vector3 hipRota = {0, 0, 0};
+	//回転速度
+	float hipRotaSpeed = PI / 90;
+	if (input_->PushKey(DIK_J)) {
+		hipRota.y = -hipRotaSpeed;
+	} else if (input_->PushKey(DIK_K)) {
+		hipRota.y = hipRotaSpeed;
+	};
+	worldTransform_[PartId::kHip].rotation_ += hipRota;
+
+
+
+	for (int i = 0; i < 9; i++) {
+		worldTransform_[i].matWorld_ = Affine(worldTransform_[i]);
+		if (i > 0) {
+			worldTransform_[i].matWorld_ *= worldTransform_[i].parent_->matWorld_;
+		}
+		worldTransform_[i].TransferMatrix();
+		cubes[i]->Update(worldTransform_[i].matWorld_);
+	}
+
+
+
 	/*//デバックカメラの移動
 	debugCamera_->Update();*/
-
 
 	////視点移動
 	//{
@@ -174,22 +249,22 @@ void GameScene::Update() {
 	//	debugText_->Printf("fovAngleY(degree):%f", viewProjection_.fovAngleY);
 	//}
 
-	//クリップ距離変更処理
-	{
-		//ニアクリップ変更速度
-		float nearZSpeed = 0.1f;
-		//上下キーでニアクリップ距離変更
-		if (input_->PushKey(DIK_UP)) {
-			viewProjection_.nearZ += nearZSpeed;
-		} else if (input_->PushKey(DIK_DOWN)) {
-			viewProjection_.nearZ -= nearZSpeed;
-		}
-		//行列の再計算
-		viewProjection_.UpdateMatrix();
-		//デバッグ用表示
-		debugText_->SetPos(50, 130);
-		debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
-	}
+	////クリップ距離変更処理
+	//{
+	//	//ニアクリップ変更速度
+	//	float nearZSpeed = 0.1f;
+	//	//上下キーでニアクリップ距離変更
+	//	if (input_->PushKey(DIK_UP)) {
+	//		viewProjection_.nearZ += nearZSpeed;
+	//	} else if (input_->PushKey(DIK_DOWN)) {
+	//		viewProjection_.nearZ -= nearZSpeed;
+	//	}
+	//	//行列の再計算
+	//	viewProjection_.UpdateMatrix();
+	//	//デバッグ用表示
+	//	debugText_->SetPos(50, 130);
+	//	debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
+	//}
 
 }
 
@@ -221,7 +296,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	for (int i = 0; i < 100; i++) {
+	for (int i = PartId::kChest; i < PartId::kNumPartId; i++) {
 		cubes[i]->Draw(viewProjection_);
 	}
 

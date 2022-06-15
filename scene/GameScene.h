@@ -57,8 +57,23 @@ class GameScene {
 	/// </summary>
 	
 	//オブジェクト
-	Cube* cubes[100];
-	WorldTransform worldTransforms_[100];
+	Cube* cubes[9];
+	WorldTransform worldTransform_[9];
+
+  public:
+	enum PartId {
+		kRoot,//大元
+		kSpine,//脊髄
+		kChest,//胸
+		kHead,//頭
+		kArmL,//左腕
+		kArmR,//右腕
+		kHip,//尻
+		kLegL,//左足
+		kLegR,//右足
+
+		kNumPartId
+	};
 
 	//デバッグカメラ
 	ViewProjection viewProjection_;
