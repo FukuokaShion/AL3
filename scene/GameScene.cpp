@@ -51,50 +51,43 @@ void GameScene::Initialize() {
 
 //---------オブジェクト----------
 	{
-		//大元
-		worldTransform_[PartId::kRoot].Initialize();
-		//脊髄
-		worldTransform_[PartId::kSpine].Initialize();
-		worldTransform_[PartId::kSpine].parent_ = &worldTransform_[PartId::kRoot];
-		worldTransform_[PartId::kSpine].translation_ = {0, 4.5, 0};
-
-		//上半身
-		//胸
-		worldTransform_[PartId::kChest].Initialize();
-		worldTransform_[PartId::kChest].parent_ = &worldTransform_[PartId::kSpine];
-		worldTransform_[PartId::kChest].translation_ = {0, 0, 0};
-		//頭
-		worldTransform_[PartId::kHead].Initialize();
-		worldTransform_[PartId::kHead].parent_ = &worldTransform_[PartId::kChest];
-		worldTransform_[PartId::kHead].translation_ = {0, 3.0f, 0};
-		//左腕
-		worldTransform_[PartId::kArmL].Initialize();
-		worldTransform_[PartId::kArmL].parent_ = &worldTransform_[PartId::kChest];
-		worldTransform_[PartId::kArmL].translation_ = {-3.0f, 0, 0};
-		//右腕
-		worldTransform_[PartId::kArmR].Initialize();
-		worldTransform_[PartId::kArmR].parent_ = &worldTransform_[PartId::kChest];
-		worldTransform_[PartId::kArmR].translation_ = {3.0f, 0, 0};
-
-		//下半身
-		//尻
-		worldTransform_[PartId::kHip].Initialize();
-		worldTransform_[PartId::kHip].parent_ = &worldTransform_[PartId::kSpine];
-		worldTransform_[PartId::kHip].translation_ = {0, -3.0f, 0};
-		//左足
-		worldTransform_[PartId::kLegL].Initialize();
-		worldTransform_[PartId::kLegL].parent_ = &worldTransform_[PartId::kHip];
-		worldTransform_[PartId::kLegL].translation_ = {-3.0f, -6.0f, 0};
-		//右足
-		worldTransform_[PartId::kLegR].Initialize();
-		worldTransform_[PartId::kLegR].parent_ = &worldTransform_[PartId::kHip];
-		worldTransform_[PartId::kLegR].translation_ = {3.0f, -6.0f, 0};
-
-
 		//オブジェクトの初期化
 		for (int i = 0; i < 9; i++) {
 			cubes[i] = new Cube();
-			cubes[i]->Update(worldTransform_[i]);
+		}
+
+		//脊髄
+		cubes[PartId::kSpine]->worldTransform_.parent_ = &cubes[PartId::kRoot]->worldTransform_;
+		cubes[PartId::kSpine]->worldTransform_.translation_ = {0, 4.5f, 0};
+
+		//上半身
+		//胸
+		cubes[PartId::kChest]->worldTransform_.parent_ = &cubes[PartId::kSpine]->worldTransform_;
+		cubes[PartId::kChest]->worldTransform_.translation_ = {0, 0, 0};
+		//頭
+		cubes[PartId::kHead]->worldTransform_.parent_ = &cubes[PartId::kChest]->worldTransform_;
+		cubes[PartId::kHead]->worldTransform_.translation_ = {0, 3.0f, 0};
+		//左腕
+		cubes[PartId::kArmL]->worldTransform_.parent_ = &cubes[PartId::kChest]->worldTransform_;
+		cubes[PartId::kArmL]->worldTransform_.translation_ = {-3.0f, 0, 0};
+		//右腕
+		cubes[PartId::kArmR]->worldTransform_.parent_ = &cubes[PartId::kChest]->worldTransform_;
+		cubes[PartId::kArmR]->worldTransform_.translation_ = {3.0f, 0, 0};
+
+		//下半身
+		//尻
+		cubes[PartId::kHip]->worldTransform_.parent_ = &cubes[PartId::kSpine]->worldTransform_;
+		cubes[PartId::kHip]->worldTransform_.translation_ = {0, -3.0f, 0};
+		//左足
+		cubes[PartId::kLegL]->worldTransform_.parent_ = &cubes[PartId::kHip]->worldTransform_;
+		cubes[PartId::kLegL]->worldTransform_.translation_ = {-3.0f, -3.0f, 0};
+		//右足
+		cubes[PartId::kLegR]->worldTransform_.parent_ = &cubes[PartId::kHip]->worldTransform_;
+		cubes[PartId::kLegR]->worldTransform_.translation_ = {3.0f, -3.0f, 0};
+
+		//オブジェクトを初期位置へ移動
+		for (int i = PartId::kRoot; i < PartId::kNumPartId; i++) {
+			cubes[i]->Update();
 		}
 	}
 }
@@ -112,7 +105,7 @@ void GameScene::Update() {
 	} else if (input_->PushKey(DIK_LEFT)) {
 		move.x = -moveSpeed;
 	};
-	worldTransform_[PartId::kRoot].translation_ += move;
+	cubes[PartId::kRoot]->worldTransform_.translation_ += move;
 
 
 	//上半身回転
@@ -125,7 +118,7 @@ void GameScene::Update() {
 	} else if (input_->PushKey(DIK_I)) {
 		chestRota.y = chestRotaSpeed;
 	};
-	worldTransform_[PartId::kChest].rotation_ += chestRota;
+	cubes[PartId::kChest]->worldTransform_.rotation_ += chestRota;
 
 
 	//下半身回転
@@ -138,17 +131,19 @@ void GameScene::Update() {
 	} else if (input_->PushKey(DIK_K)) {
 		hipRota.y = hipRotaSpeed;
 	};
-	worldTransform_[PartId::kHip].rotation_ += hipRota;
+	cubes[PartId::kHip]->worldTransform_.rotation_ += hipRota;
 
 
-
+	//大元から順に更新していく
 	for (int i = 0; i < 9; i++) {
-		worldTransform_[i].matWorld_ = Affine(worldTransform_[i]);
+		//行列計算
+		cubes[i]->worldTransform_.matWorld_ = Affine(cubes[i]->worldTransform_);
+		//親の行列を掛ける
 		if (i > 0) {
-			worldTransform_[i].matWorld_ *= worldTransform_[i].parent_->matWorld_;
+			cubes[i]->worldTransform_.matWorld_ *= cubes[i]->worldTransform_.parent_->matWorld_;
 		}
-		worldTransform_[i].TransferMatrix();
-		cubes[i]->Update(worldTransform_[i].matWorld_);
+		//ワールド行列を転送
+		cubes[i]->Update(cubes[i]->worldTransform_.matWorld_);
 	}
 
 

@@ -58,7 +58,6 @@ class GameScene {
 	
 	//オブジェクト
 	Cube* cubes[9];
-	WorldTransform worldTransform_[9];
 
   public:
 	enum PartId {

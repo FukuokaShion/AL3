@@ -8,7 +8,7 @@ class Cube {
 	Cube();
 
 	~Cube();
-
+	void Update();
 	void Update(WorldTransform worldTransform);
 	void Update(Matrix4 world);
 

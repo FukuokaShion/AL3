@@ -17,6 +17,17 @@ Cube::~Cube() {
 	delete model_;
 }
 
+void Cube::Update() {
+	//s—ñİ’è
+	Matrix4 affineWorld = Affine(worldTransform_);
+
+	//Š|‚¯
+	worldTransform_.matWorld_ = affineWorld;
+
+	//s—ñ‚Ì“]‘—
+	worldTransform_.TransferMatrix();
+}
+
 void Cube::Update(WorldTransform worldTransform_) {
 	//s—ñİ’è
 	Matrix4 affineWorld = Affine(worldTransform_);
