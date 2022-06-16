@@ -6,7 +6,8 @@ void PlayerBullet::Initialize(WorldTransform worldTransform) {
 
 	texture = TextureManager::Load("black.png");
 	model = new Cube(texture);
-	model->worldTransform_ = worldTransform;
+	model->worldTransform_.translation_ = worldTransform.translation_;
+	model->worldTransform_.rotation_ = worldTransform.rotation_;
 	model->Affine();
 }
 
