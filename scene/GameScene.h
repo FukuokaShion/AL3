@@ -9,7 +9,7 @@
 #include "ViewProjection.h"
 #include "DebugCamera.h"
 
-#include "Player.h"
+#include "Player/Player.h"
 
 
 /// <summary>

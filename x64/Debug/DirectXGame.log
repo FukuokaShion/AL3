@@ -3,4 +3,5 @@ C:\KamataEngine\DirectXGame\scene\GameScene.h(47,11): warning C4305: '初期化�
   GameScene.cpp
 C:\KamataEngine\DirectXGame\scene\GameScene.h(47,11): warning C4305: '初期化中': 'double' から 'float' へ切り詰めます。
   コードを生成中...
+  LINK : 前回のインクリメンタル リンクで C:\KamataEngine\DirectXGame\x64\Debug\DirectXGame.exe が見つからなかったか、ビルドされませんでした。フル リンクを行います。
   DirectXGame.vcxproj -> C:\KamataEngine\DirectXGame\x64\Debug\DirectXGame.exe
