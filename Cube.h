@@ -5,18 +5,17 @@
 
 class Cube {
   public:
-	Cube();
+	Cube(uint32_t textureHandle);
 
 	~Cube();
 
-	void Affine(WorldTransform worldTransform);
-
-	void Draw(DebugCamera* debugCamera_);
+	void Affine();
 
 	void Draw(ViewProjection viewProjection);
 
 	private:
 	uint32_t textureHandle_ = 0;
 	Model* model_ = nullptr;
+  public:
 	WorldTransform worldTransform_;
 };

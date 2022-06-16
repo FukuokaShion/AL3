@@ -2,9 +2,9 @@
 #include"DebugCamera.h"
 #include"Affine.h"
 
-Cube::Cube() {
+Cube::Cube(uint32_t textureHanlde) {
 	//ファイルを検索してテクスチャを読み込む
-	textureHandle_ = TextureManager::Load("mushroom.jpg");
+	textureHandle_ = textureHanlde;
 	
 	// 3Dモデルの生成
 	model_ = Model::Create();
@@ -17,7 +17,7 @@ Cube::~Cube() {
 	delete model_;
 }
 
-void Cube::Affine(WorldTransform worldTransform_) {
+void Cube::Affine() {
 	//行列設定
 	Matrix4 matScale = AffineScale(worldTransform_);
 	Matrix4 matRotaX = AffineRotaX(worldTransform_);
@@ -31,10 +31,6 @@ void Cube::Affine(WorldTransform worldTransform_) {
 
 	//行列の転送
 	this->worldTransform_.TransferMatrix();
-}
-
-void Cube::Draw(DebugCamera* debugCamera_) {
-	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), textureHandle_);
 }
 
 void Cube::Draw(ViewProjection viewProjection) {

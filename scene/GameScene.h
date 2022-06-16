@@ -9,7 +9,7 @@
 #include "ViewProjection.h"
 #include "DebugCamera.h"
 
-#include "Cube.h"
+#include "Player.h"
 
 
 /// <summary>
@@ -51,18 +51,19 @@ class GameScene {
 	Audio* audio_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
+	ViewProjection viewProjection_;
 
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
 	
 	//オブジェクト
-	Cube* cubes[100];
-	WorldTransform worldTransforms_[100];
+	//プレイヤー
+	Player* player_ = nullptr;
 
 	//デバッグカメラ
-	ViewProjection viewProjection_;
 	DebugCamera* debugCamera_ = nullptr;
+	bool isDebugCamearaActive_ = false;
 
 	//カメラ上方向の角度
 	float viewAngle = 0.0f;

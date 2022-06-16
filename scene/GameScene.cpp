@@ -9,9 +9,7 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete debugCamera_;
-	for (int i = 0; i < 100; i++) {
-		cubes[i]->~Cube();
-	}
+	delete player_;
 }
 
 void GameScene::Initialize() {
@@ -30,13 +28,13 @@ void GameScene::Initialize() {
 		//カメラの上方向ベクトル設定
 		viewProjection_.up = {0.0f, 1.0f, 0.0f};
 		//カメラ垂直方向視野角を設定
-		viewProjection_.fovAngleY = PI/4.0f;
+		//viewProjection_.fovAngleY = PI/4.0f;
 		//アス比を設定
 		//viewProjection_.aspectRatio = 1.0f;
 		//ニアクリップ距離を設定
-		viewProjection_.nearZ = 52.0f;
+		//viewProjection_.nearZ = 52.0f;
 		//ファークリップ距離を設定
-		viewProjection_.farZ = 53.0f;
+		//viewProjection_.farZ = 53.0f;
 		//ビュープロジェクションの初期化
 		viewProjection_.Initialize();
 	}
@@ -49,38 +47,42 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
 //---------オブジェクト----------
-	{
-		//乱数シード生成器
-		std::random_device seed_gen;
-		//メルセンヌツイスターの乱数エンジン
-		std::mt19937_64 engin(seed_gen());
-		//回転用乱数範囲指定
-		std::uniform_real_distribution<float> rotaDist(0, PI);
-		//座標用乱数範囲指定
-		std::uniform_real_distribution<float> transDist(-10, 10);
-
-		//ワールドトランスフォームのランダム生成
-		for (WorldTransform& worldTransform : worldTransforms_) {
-			worldTransform.Initialize();
-
-			worldTransform.scale_ = {1, 1, 1};
-			worldTransform.rotation_ = {rotaDist(engin), rotaDist(engin), rotaDist(engin)};
-			worldTransform.translation_ = {transDist(engin), transDist(engin), transDist(engin)};
-		}
-		//オブジェクトの初期化
-		for (int i = 0; i < 100; i++) {
-			cubes[i] = new Cube();
-			cubes[i]->Affine(worldTransforms_[i]);
-		}
-	}
+	player_ = new Player();
+	player_->Initialize();
 }
 
 
 void GameScene::Update() {
-	/*//デバックカメラの移動
-	debugCamera_->Update();*/
+	player_->Update();
 
 
+
+	//デバッグカメラ
+	//デバッグカメラの起動
+	#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_P)) {
+		if (isDebugCamearaActive_ == 0) {
+			isDebugCamearaActive_ = 1;
+		} else if (isDebugCamearaActive_ == 1) {
+			isDebugCamearaActive_ = 0;
+		}
+	}
+	#endif
+
+	//デバックカメラの移動
+	if (isDebugCamearaActive_ == 1) {
+		//更新
+		debugCamera_->Update();
+		//デバッグカメラのビュー行列とプロジェクション行列をコピー
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		//行列の転送
+		viewProjection_.TransferMatrix();
+	} else {
+		viewProjection_.UpdateMatrix();
+		viewProjection_.TransferMatrix();
+	}
+	
 	////視点移動
 	//{
 	//	Vector3 move = {0, 0, 0};
@@ -175,21 +177,21 @@ void GameScene::Update() {
 	//}
 
 	//クリップ距離変更処理
-	{
-		//ニアクリップ変更速度
-		float nearZSpeed = 0.1f;
-		//上下キーでニアクリップ距離変更
-		if (input_->PushKey(DIK_UP)) {
-			viewProjection_.nearZ += nearZSpeed;
-		} else if (input_->PushKey(DIK_DOWN)) {
-			viewProjection_.nearZ -= nearZSpeed;
-		}
-		//行列の再計算
-		viewProjection_.UpdateMatrix();
-		//デバッグ用表示
-		debugText_->SetPos(50, 130);
-		debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
-	}
+	//{
+	//	//ニアクリップ変更速度
+	//	float nearZSpeed = 0.1f;
+	//	//上下キーでニアクリップ距離変更
+	//	if (input_->PushKey(DIK_UP)) {
+	//		viewProjection_.nearZ += nearZSpeed;
+	//	} else if (input_->PushKey(DIK_DOWN)) {
+	//		viewProjection_.nearZ -= nearZSpeed;
+	//	}
+	//	//行列の再計算
+	//	viewProjection_.UpdateMatrix();
+	//	//デバッグ用表示
+	//	debugText_->SetPos(50, 130);
+	//	debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
+	//}
 
 }
 
@@ -220,10 +222,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-
-	for (int i = 0; i < 100; i++) {
-		cubes[i]->Draw(viewProjection_);
-	}
+	player_->Draw(viewProjection_);
 
 
 	// 3Dオブジェクト描画後処理
