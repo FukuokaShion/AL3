@@ -1,5 +1,9 @@
 #include "Player.h"
 
+Player::~Player() {
+	delete model;
+}
+
 void Player::Initialize() {
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
@@ -12,8 +16,9 @@ void Player::Update() {
 	Transform();
 	Rotate();
 	Attack();
-	if (bullet_) {
-		bullet_->Update();
+	//弾更新
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+		bullet->Update();
 	}
 
 	//デバッグ表示
@@ -79,17 +84,22 @@ void Player::Rotate() {
 }
 
 void Player::Attack() {
-	if (input_->PushKey(DIK_SPACE)) {
-		PlayerBullet* newBullet = new PlayerBullet();
+	if (input_->TriggerKey(DIK_SPACE)) {
+		//弾を生成し初期化
+		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
+		//自キャラの座標をコピー
 		newBullet->Initialize(model->worldTransform_);
 
-		bullet_ = newBullet;
+		//弾を登録
+		bullets_.push_back(std::move(newBullet));
 	}
 }
 
 void Player::Draw(ViewProjection viewProjection) {
+	//自機描画
 	model->Draw(viewProjection);
-	if (bullet_) {
-		bullet_->Draw(viewProjection);
+	//弾描画
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+		bullet->Draw(viewProjection);
 	}
 }

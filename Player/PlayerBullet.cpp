@@ -1,5 +1,9 @@
 #include "PlayerBullet.h"
 
+PlayerBullet::~PlayerBullet() {
+	delete model;
+}
+
 void PlayerBullet::Initialize(WorldTransform worldTransform) {
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();

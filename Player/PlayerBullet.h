@@ -1,9 +1,11 @@
 #pragma once
+#include<memory>
 #include "Cube.h"
 #include "DebugText.h"
 
 class PlayerBullet {
   public:
+	~PlayerBullet();
 	//‰Šú‰»
 	void Initialize(WorldTransform worldTransform);
 	//XV
